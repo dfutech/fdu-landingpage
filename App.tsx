@@ -12,7 +12,7 @@ export type Theme = 'light' | 'dark';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>('dfulabs');
-  const [language, setLanguage] = useState<Language>('vn');
+  const [language, setLanguage] = useState<Language>('en');
   const [theme, setTheme] = useState<Theme>('light');
 
   // Scroll to top when view changes

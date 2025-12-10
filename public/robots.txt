@@ -1,0 +1,11 @@
+# Robots.txt for DFULabs
+# https://dfulabs.com
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://dfulabs.com/sitemap.xml
+
+# Crawl-delay (optional, for polite crawlers)
+Crawl-delay: 1

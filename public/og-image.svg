@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3A7CBA"/>
+      <stop offset="100%" style="stop-color:#2a5a8a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="80" y="200" width="80" height="80" rx="16" fill="white"/>
+  <text x="120" y="260" font-family="Poppins, Arial, sans-serif" font-size="50" font-weight="700" fill="#3A7CBA" text-anchor="middle">D</text>
+  <text x="180" y="260" font-family="Poppins, Arial, sans-serif" font-size="48" font-weight="700" fill="white">DFULabs</text>
+  <text x="80" y="340" font-family="Inter, Arial, sans-serif" font-size="36" fill="rgba(255,255,255,0.9)">Tech Solutions Shaping New Lifestyles</text>
+  <text x="80" y="400" font-family="Inter, Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.7)">Web &amp; Mobile Development | AI Integration | UX/UI Design</text>
+</svg>

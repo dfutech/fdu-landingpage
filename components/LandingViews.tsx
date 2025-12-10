@@ -3,13 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState, useRef, useLayoutEffect } from 'react';
-import { 
-  Code, Cpu, Palette, ArrowRight, Smartphone, 
-  ScanLine, Bell, Boxes, Star, Download, Menu, X, 
-  ChevronLeft, Mail, Linkedin, Github, Moon, Sun, Globe
+import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import {
+  Code, Cpu, Palette, ArrowRight,
+  ScanLine, Bell, Boxes, Star, Download, Menu, X,
+  ChevronLeft, Mail, Linkedin, Github, Moon, Sun, Globe,
+  MessageCircle, Phone, Send, CheckCircle, Rocket,
+  ChevronDown, Clock
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 
 // --- TYPES ---
@@ -55,6 +57,39 @@ const content = {
       team: {
         title: "Đội Ngũ Phát Triển",
         subtitle: "Những người đứng sau các giải pháp của DFULabs"
+      },
+      stats: {
+        projects: "Dự án hoàn thành",
+        clients: "Khách hàng hài lòng",
+        experience: "Năm kinh nghiệm"
+      },
+      process: {
+        title: "Quy Trình Hợp Tác",
+        subtitle: "4 bước đơn giản để biến ý tưởng thành hiện thực",
+        steps: [
+          { title: "Trao Đổi", desc: "Lắng nghe ý tưởng và nhu cầu của bạn" },
+          { title: "Lên Kế Hoạch", desc: "Đề xuất giải pháp và báo giá chi tiết" },
+          { title: "Phát Triển", desc: "Xây dựng sản phẩm với cập nhật thường xuyên" },
+          { title: "Bàn Giao", desc: "Hoàn thiện và hỗ trợ sau bàn giao" }
+        ]
+      },
+      contact: {
+        title: "Liên Hệ Ngay",
+        subtitle: "Nhận tư vấn miễn phí trong 24h",
+        name: "Họ và tên",
+        email: "Email",
+        message: "Mô tả dự án của bạn",
+        submit: "Gửi Yêu Cầu",
+        success: "Cảm ơn bạn! Chúng tôi sẽ liên hệ sớm."
+      },
+      faq: {
+        title: "Câu Hỏi Thường Gặp",
+        items: [
+          { q: "Chi phí phát triển ứng dụng là bao nhiêu?", a: "Chi phí phụ thuộc vào độ phức tạp và tính năng. Chúng tôi cung cấp báo giá miễn phí sau khi trao đổi chi tiết về dự án của bạn." },
+          { q: "Thời gian hoàn thành dự án là bao lâu?", a: "Thông thường từ 4-12 tuần tùy theo quy mô. Chúng tôi luôn đảm bảo deadline và cập nhật tiến độ thường xuyên." },
+          { q: "DFULabs có hỗ trợ sau bàn giao không?", a: "Có! Chúng tôi cung cấp 3 tháng bảo hành miễn phí và các gói hỗ trợ dài hạn linh hoạt." },
+          { q: "Tôi có thể theo dõi tiến độ dự án không?", a: "Hoàn toàn có thể. Bạn sẽ được cập nhật hàng tuần qua meeting và có quyền truy cập vào hệ thống quản lý dự án." }
+        ]
       },
       footer: {
         title: "Bạn có ý tưởng lớn?",
@@ -131,6 +166,39 @@ const content = {
       team: {
         title: "Development Team",
         subtitle: "The people behind DFULabs solutions"
+      },
+      stats: {
+        projects: "Projects completed",
+        clients: "Happy clients",
+        experience: "Years experience"
+      },
+      process: {
+        title: "How We Work",
+        subtitle: "4 simple steps to turn your idea into reality",
+        steps: [
+          { title: "Discuss", desc: "Listen to your ideas and requirements" },
+          { title: "Plan", desc: "Propose solutions and detailed quotes" },
+          { title: "Develop", desc: "Build product with regular updates" },
+          { title: "Deliver", desc: "Complete and post-delivery support" }
+        ]
+      },
+      contact: {
+        title: "Contact Us",
+        subtitle: "Get free consultation within 24h",
+        name: "Full name",
+        email: "Email",
+        message: "Describe your project",
+        submit: "Send Request",
+        success: "Thank you! We'll contact you soon."
+      },
+      faq: {
+        title: "Frequently Asked Questions",
+        items: [
+          { q: "How much does app development cost?", a: "Cost depends on complexity and features. We provide free quotes after discussing your project in detail." },
+          { q: "How long does a project take?", a: "Typically 4-12 weeks depending on scope. We always meet deadlines and provide regular progress updates." },
+          { q: "Does DFULabs offer post-delivery support?", a: "Yes! We provide 3 months free warranty and flexible long-term support packages." },
+          { q: "Can I track project progress?", a: "Absolutely. You'll receive weekly updates via meetings and have access to our project management system." }
+        ]
       },
       footer: {
         title: "Have a big idea?",
@@ -319,10 +387,123 @@ const GSAPTiltCard: React.FC<{ children: React.ReactNode; className?: string }> 
   );
 };
 
+// --- ANIMATED COUNTER COMPONENT ---
+const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({ end, duration = 2000, suffix = '' }) => {
+  const [count, setCount] = useState(0);
+  const countRef = useRef<HTMLSpanElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          let startTime: number;
+          const animate = (currentTime: number) => {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            setCount(Math.floor(progress * end));
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            }
+          };
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    if (countRef.current) observer.observe(countRef.current);
+    return () => observer.disconnect();
+  }, [end, duration]);
+
+  return <span ref={countRef}>{count}{suffix}</span>;
+};
+
+// --- FAQ ITEM COMPONENT ---
+const FAQItem: React.FC<{ question: string; answer: string; isOpen: boolean; onClick: () => void }> = ({ question, answer, isOpen, onClick }) => (
+  <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+    <button
+      onClick={onClick}
+      className="w-full px-6 py-4 flex items-center justify-between text-left bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+    >
+      <span className="font-semibold text-gray-900 dark:text-white pr-4">{question}</span>
+      <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+    </button>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 leading-relaxed">
+            {answer}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
+);
+
+// --- FLOATING CONTACT BUTTON ---
+const FloatingContactButton: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.8 }}
+            className="flex flex-col gap-3"
+          >
+            <a
+              href="https://zalo.me/0123456789"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-3 bg-blue-500 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
+            >
+              <MessageCircle size={20} />
+              <span className="font-medium">Zalo</span>
+            </a>
+            <a
+              href="tel:+84123456789"
+              className="flex items-center gap-3 bg-green-500 text-white px-4 py-3 rounded-full shadow-lg hover:bg-green-600 transition-colors"
+            >
+              <Phone size={20} />
+              <span className="font-medium">Gọi ngay</span>
+            </a>
+            <a
+              href="mailto:contact@dfulabs.com"
+              className="flex items-center gap-3 bg-red-500 text-white px-4 py-3 rounded-full shadow-lg hover:bg-red-600 transition-colors"
+            >
+              <Mail size={20} />
+              <span className="font-medium">Email</span>
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
+          isOpen ? 'bg-gray-700 rotate-45' : 'bg-dfu-primary hover:bg-blue-700'
+        }`}
+      >
+        {isOpen ? <X size={24} className="text-white" /> : <MessageCircle size={24} className="text-white" />}
+      </button>
+    </div>
+  );
+};
+
 // --- DFULABS (COMPANY) LANDING PAGE ---
 
 export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLanguage, theme, setTheme }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const t = content[language].dfulabs;
   const floatingIconRef1 = useRef(null);
   const floatingIconRef2 = useRef(null);
@@ -434,6 +615,30 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
              </GSAPTiltCard>
           </div>
         </div>
+
+        {/* Stats Counter */}
+        <div className="mt-16 pt-12 border-t border-gray-200 dark:border-gray-700">
+          <div className="grid grid-cols-3 gap-8 text-center">
+            <div>
+              <div className="font-display text-4xl md:text-5xl font-bold text-dfu-primary dark:text-blue-400">
+                <AnimatedCounter end={10} suffix="+" />
+              </div>
+              <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm md:text-base">{t.stats.projects}</p>
+            </div>
+            <div>
+              <div className="font-display text-4xl md:text-5xl font-bold text-dfu-primary dark:text-blue-400">
+                <AnimatedCounter end={100} suffix="%" />
+              </div>
+              <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm md:text-base">{t.stats.clients}</p>
+            </div>
+            <div>
+              <div className="font-display text-4xl md:text-5xl font-bold text-dfu-primary dark:text-blue-400">
+                <AnimatedCounter end={5} suffix="+" />
+              </div>
+              <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm md:text-base">{t.stats.experience}</p>
+            </div>
+          </div>
+        </div>
       </Section>
 
       {/* Capabilities */}
@@ -501,47 +706,186 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
          </div>
       </Section>
 
-      {/* Team */}
+      {/* Process / How We Work */}
       <Section className="bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div className="text-center mb-16">
+          <h2 className="font-display text-3xl font-bold mb-4 text-dfu-dark dark:text-white">{t.process.title}</h2>
+          <p className="text-text-light dark:text-gray-400 max-w-2xl mx-auto">{t.process.subtitle}</p>
+        </div>
+        <div className="grid md:grid-cols-4 gap-6">
+          {t.process.steps.map((step, idx) => (
+            <div key={idx} className="relative">
+              <div className="text-center p-6">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-dfu-primary/10 dark:bg-blue-900/30 flex items-center justify-center">
+                  {idx === 0 && <MessageCircle className="text-dfu-primary dark:text-blue-400" size={28} />}
+                  {idx === 1 && <Rocket className="text-dfu-primary dark:text-blue-400" size={28} />}
+                  {idx === 2 && <Code className="text-dfu-primary dark:text-blue-400" size={28} />}
+                  {idx === 3 && <CheckCircle className="text-dfu-primary dark:text-blue-400" size={28} />}
+                </div>
+                <div className="w-8 h-8 mx-auto -mt-2 mb-4 rounded-full bg-dfu-primary text-white flex items-center justify-center font-bold text-sm">
+                  {idx + 1}
+                </div>
+                <h3 className="font-display text-lg font-bold mb-2 text-gray-900 dark:text-white">{step.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">{step.desc}</p>
+              </div>
+              {idx < 3 && (
+                <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-dfu-primary/30 to-transparent"></div>
+              )}
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Team */}
+      <Section className="bg-gray-50 dark:bg-gray-800/50 transition-colors duration-300">
          <div className="text-center mb-16">
             <h2 className="font-display text-3xl font-bold mb-4 text-dfu-dark dark:text-white">{t.team.title}</h2>
             <p className="text-text-light dark:text-gray-400">{t.team.subtitle}</p>
          </div>
          <div className="flex flex-col md:flex-row justify-center gap-12">
             {[
-              { name: "Minh Tuấn", role: "Co-Founder & Lead Developer", desc: "Full-stack expert passionate about building sustainable systems." },
-              { name: "Hoàng Long", role: "Co-Founder & Product Designer", desc: "Focused on user experience and integrating AI into products." }
+              { name: "Lao Gia Du", role: "Co-Founder & Developer", desc: "Full-stack expert passionate about building sustainable systems.", avatar: "/assets/laogiadu.jpg", linkedin: "https://www.linkedin.com/in/lao-gia-du/" },
+              { name: "Huỳnh Thanh Phúc", role: "Co-Founder & Developer", desc: "Focused on user experience and integrating AI into products.", avatar: "/assets/huynhthanhphuc.jpg", linkedin: "https://www.linkedin.com/in/huynh-thanh-phuc-3921a7140/", website: "https://tphuc.existflow.site/" }
             ].map((dev, idx) => (
               <div key={idx} className="flex flex-col items-center text-center max-w-sm">
                  <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full mb-6 overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg">
-                    {/* Placeholder Avatar */}
-                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${dev.name}&backgroundColor=b6e3f4`} alt={dev.name} />
+                    <img src={dev.avatar} alt={dev.name} className="w-full h-full object-cover" />
                  </div>
                  <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white">{dev.name}</h3>
                  <span className="text-dfu-primary dark:text-blue-400 font-medium text-sm mb-3 uppercase tracking-wide">{dev.role}</span>
                  <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{dev.desc}</p>
+                 <div className="flex gap-4 mt-4">
+                    <a href={dev.linkedin} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
+                       <Linkedin size={20} />
+                    </a>
+                    {dev.website && (
+                       <a href={dev.website} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
+                          <Globe size={20} />
+                       </a>
+                    )}
+                 </div>
               </div>
             ))}
          </div>
       </Section>
 
+      {/* FAQ Section */}
+      <Section className="bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div className="text-center mb-12">
+          <h2 className="font-display text-3xl font-bold mb-4 text-dfu-dark dark:text-white">{t.faq.title}</h2>
+        </div>
+        <div className="max-w-3xl mx-auto space-y-4">
+          {t.faq.items.map((item, idx) => (
+            <FAQItem
+              key={idx}
+              question={item.q}
+              answer={item.a}
+              isOpen={openFAQ === idx}
+              onClick={() => setOpenFAQ(openFAQ === idx ? null : idx)}
+            />
+          ))}
+        </div>
+      </Section>
+
+      {/* Contact Form Section */}
+      <Section id="contact" className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="font-display text-3xl font-bold mb-4 text-dfu-dark dark:text-white">{t.contact.title}</h2>
+            <p className="text-text-light dark:text-gray-400 mb-6">{t.contact.subtitle}</p>
+            <div className="space-y-4 text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-3">
+                <Mail className="text-dfu-primary" size={20} />
+                <span>contact@dfulabs.com</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Phone className="text-dfu-primary" size={20} />
+                <span>+84 123 456 789</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Clock className="text-dfu-primary" size={20} />
+                <span>Mon - Fri: 9:00 - 18:00</span>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+            {formSubmitted ? (
+              <div className="text-center py-8">
+                <CheckCircle className="text-green-500 mx-auto mb-4" size={48} />
+                <p className="text-lg font-medium text-gray-900 dark:text-white">{t.contact.success}</p>
+              </div>
+            ) : (
+              <form onSubmit={(e) => { e.preventDefault(); setFormSubmitted(true); }} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t.contact.name}</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-dfu-primary focus:border-transparent outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t.contact.email}</label>
+                  <input
+                    type="email"
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-dfu-primary focus:border-transparent outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t.contact.message}</label>
+                  <textarea
+                    rows={4}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-dfu-primary focus:border-transparent outline-none transition-all resize-none"
+                  ></textarea>
+                </div>
+                <Button variant="primary" colorTheme="blue" className="w-full gap-2">
+                  <Send size={18} /> {t.contact.submit}
+                </Button>
+              </form>
+            )}
+          </div>
+        </div>
+      </Section>
+
       {/* Footer */}
-      <footer className="bg-gray-50 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 pt-16 pb-8 transition-colors duration-300">
-        <div className="container mx-auto px-6 text-center">
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-dfu-dark dark:text-white mb-6">{t.footer.title}</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-xl mx-auto">{t.footer.desc}</p>
-            <Button variant="primary" colorTheme="blue" className="mb-16">{t.footer.cta}</Button>
-            
-            <div className="border-t border-gray-200 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 dark:text-gray-400 gap-4">
-               <div>{t.footer.rights}</div>
-               <div className="flex gap-6">
-                 <a href="https://www.linkedin.com/company/dfulabs" target="_blank" rel="noreferrer" className="hover:text-dfu-primary dark:hover:text-blue-400 transition-colors"><Linkedin size={20}/></a>
-                 <a href="https://github.com/dfulabs" target="_blank" rel="noreferrer" className="hover:text-dfu-primary dark:hover:text-blue-400 transition-colors"><Github size={20}/></a>
-                 <a href="mailto:contact@dfulabs.com" className="hover:text-dfu-primary dark:hover:text-blue-400 transition-colors"><Mail size={20}/></a>
-               </div>
+      <footer className="bg-gray-900 dark:bg-black text-white pt-12 pb-8 transition-colors duration-300">
+        <div className="container mx-auto px-6">
+            <div className="grid md:grid-cols-3 gap-8 mb-8">
+              <div>
+                <div className="flex items-center gap-2 font-display font-bold text-2xl mb-4">
+                  <div className="w-8 h-8 bg-dfu-primary rounded-md flex items-center justify-center">D</div>
+                  DFULabs
+                </div>
+                <p className="text-gray-400 text-sm leading-relaxed">{t.footer.desc}</p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-4">Quick Links</h4>
+                <div className="space-y-2 text-gray-400 text-sm">
+                  <a href="#about" className="block hover:text-white transition-colors">{t.nav.about}</a>
+                  <a href="#services" className="block hover:text-white transition-colors">{t.nav.services}</a>
+                  <a href="#product" className="block hover:text-white transition-colors">{t.nav.product}</a>
+                  <a href="#contact" className="block hover:text-white transition-colors">{t.nav.contact}</a>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-4">Connect</h4>
+                <div className="flex gap-4">
+                  <a href="https://www.linkedin.com/company/dfulabs" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-dfu-primary transition-colors"><Linkedin size={18}/></a>
+                  <a href="https://github.com/dfulabs" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-dfu-primary transition-colors"><Github size={18}/></a>
+                  <a href="mailto:contact@dfulabs.com" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-dfu-primary transition-colors"><Mail size={18}/></a>
+                </div>
+              </div>
+            </div>
+            <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
+               {t.footer.rights}
             </div>
         </div>
       </footer>
+
+      {/* Floating Contact Button */}
+      <FloatingContactButton />
     </div>
   );
 };
