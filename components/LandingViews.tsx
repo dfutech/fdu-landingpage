@@ -9,10 +9,12 @@ import {
   ScanLine, Bell, Boxes, Star, Download, Menu, X,
   ChevronLeft, Mail, Linkedin, Github, Moon, Sun, Globe,
   MessageCircle, Phone, Send, CheckCircle, Rocket,
-  ChevronDown, Clock
+  ChevronDown, Clock, Landmark, ShoppingCart, Gamepad2,
+  GraduationCap, HeartPulse, UtensilsCrossed, MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
+import ChatBotWidget from './chatbot/ChatBot';
 
 // --- TYPES ---
 type Language = 'vn' | 'en';
@@ -72,6 +74,22 @@ const content = {
           { title: "Phát Triển", desc: "Xây dựng sản phẩm với cập nhật thường xuyên" },
           { title: "Bàn Giao", desc: "Hoàn thiện và hỗ trợ sau bàn giao" }
         ]
+      },
+      industries: {
+        title: "Lĩnh Vực Phát Triển",
+        subtitle: "Chúng tôi có kinh nghiệm và sẵn sàng nhận dự án trong nhiều ngành nghề đa dạng",
+        items: [
+          { name: "Ngân Hàng & Tài Chính", desc: "Ứng dụng banking, ví điện tử, thanh toán", icon: "bank" },
+          { name: "Thương Mại Điện Tử", desc: "Marketplace, shop online, quản lý đơn hàng", icon: "shopping" },
+          { name: "Game & Giải Trí", desc: "Mobile game, casual game, gamification", icon: "game" },
+          { name: "Giáo Dục", desc: "E-learning, LMS, ứng dụng học tập", icon: "education" },
+          { name: "Y Tế & Sức Khỏe", desc: "Telemedicine, health tracking, booking", icon: "health" },
+          { name: "Nhà Hàng & F&B", desc: "POS, đặt bàn, delivery, quản lý kho", icon: "food" }
+        ]
+      },
+      technologies: {
+        title: "Công Nghệ Sử Dụng",
+        subtitle: "Chúng tôi sử dụng các công nghệ hiện đại và đáng tin cậy nhất"
       },
       contact: {
         title: "Liên Hệ Ngay",
@@ -181,6 +199,22 @@ const content = {
           { title: "Develop", desc: "Build product with regular updates" },
           { title: "Deliver", desc: "Complete and post-delivery support" }
         ]
+      },
+      industries: {
+        title: "Industries We Serve",
+        subtitle: "We have experience and are ready to take on projects across diverse industries",
+        items: [
+          { name: "Banking & Finance", desc: "Banking apps, e-wallets, payment solutions", icon: "bank" },
+          { name: "E-Commerce", desc: "Marketplaces, online shops, order management", icon: "shopping" },
+          { name: "Gaming & Entertainment", desc: "Mobile games, casual games, gamification", icon: "game" },
+          { name: "Education", desc: "E-learning, LMS, learning applications", icon: "education" },
+          { name: "Healthcare", desc: "Telemedicine, health tracking, booking", icon: "health" },
+          { name: "Restaurant & F&B", desc: "POS, reservations, delivery, inventory", icon: "food" }
+        ]
+      },
+      technologies: {
+        title: "Technologies We Use",
+        subtitle: "We leverage the most modern and reliable technologies"
       },
       contact: {
         title: "Contact Us",
@@ -446,55 +480,81 @@ const FAQItem: React.FC<{ question: string; answer: string; isOpen: boolean; onC
   </div>
 );
 
-// --- FLOATING CONTACT BUTTON ---
-const FloatingContactButton: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+// --- PROCESS STEP CARD WITH 3D EFFECT ---
+const ProcessStepCard: React.FC<{
+  step: { title: string; desc: string };
+  index: number;
+  icon: React.ReactNode;
+}> = ({ step, index, icon }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 10;
+    const rotateY = (centerX - x) / 10;
+
+    cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+  };
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    cardRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+  };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.8 }}
-            className="flex flex-col gap-3"
-          >
-            <a
-              href="https://zalo.me/0123456789"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-3 bg-blue-500 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
-            >
-              <MessageCircle size={20} />
-              <span className="font-medium">Zalo</span>
-            </a>
-            <a
-              href="tel:+84123456789"
-              className="flex items-center gap-3 bg-green-500 text-white px-4 py-3 rounded-full shadow-lg hover:bg-green-600 transition-colors"
-            >
-              <Phone size={20} />
-              <span className="font-medium">Gọi ngay</span>
-            </a>
-            <a
-              href="mailto:contact@dfulabs.com"
-              className="flex items-center gap-3 bg-red-500 text-white px-4 py-3 rounded-full shadow-lg hover:bg-red-600 transition-colors"
-            >
-              <Mail size={20} />
-              <span className="font-medium">Email</span>
-            </a>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
-          isOpen ? 'bg-gray-700 rotate-45' : 'bg-dfu-primary hover:bg-blue-700'
-        }`}
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.15 }}
+      viewport={{ once: true }}
+      className="relative"
+    >
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 ease-out cursor-pointer group hover:shadow-2xl hover:border-dfu-primary/30"
+        style={{ transformStyle: 'preserve-3d' }}
       >
-        {isOpen ? <X size={24} className="text-white" /> : <MessageCircle size={24} className="text-white" />}
-      </button>
-    </div>
+        {/* Glowing background effect */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-dfu-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        {/* Step number badge */}
+        <div className="absolute -top-4 -right-4 w-10 h-10 rounded-full bg-gradient-to-br from-dfu-primary to-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+          {index + 1}
+        </div>
+
+        {/* Icon container with floating animation */}
+        <motion.div
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: index * 0.5 }}
+          className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-dfu-primary/10 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 flex items-center justify-center shadow-inner"
+          style={{ transform: 'translateZ(20px)' }}
+        >
+          <div className="text-dfu-primary dark:text-blue-400 transform group-hover:scale-110 transition-transform duration-300">
+            {icon}
+          </div>
+        </motion.div>
+
+        {/* Content */}
+        <div className="text-center relative" style={{ transform: 'translateZ(30px)' }}>
+          <h3 className="font-display text-xl font-bold mb-3 text-gray-900 dark:text-white group-hover:text-dfu-primary dark:group-hover:text-blue-400 transition-colors">
+            {step.title}
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+            {step.desc}
+          </p>
+        </div>
+
+        {/* Bottom accent line */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-1 bg-gradient-to-r from-dfu-primary to-blue-500 rounded-full group-hover:w-1/2 transition-all duration-500" />
+      </div>
+    </motion.div>
   );
 };
 
@@ -663,6 +723,121 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
         </div>
       </Section>
 
+      {/* Industries We Serve */}
+      <Section className="bg-gray-50 dark:bg-gray-800/50 transition-colors duration-300">
+        <div className="text-center mb-16">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="font-display text-3xl font-bold mb-4 text-dfu-dark dark:text-white"
+          >
+            {t.industries.title}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            viewport={{ once: true }}
+            className="text-text-light dark:text-gray-400 max-w-2xl mx-auto"
+          >
+            {t.industries.subtitle}
+          </motion.p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          {t.industries.items.map((item, idx) => {
+            const iconMap: Record<string, React.ReactNode> = {
+              bank: <Landmark size={28} />,
+              shopping: <ShoppingCart size={28} />,
+              game: <Gamepad2 size={28} />,
+              education: <GraduationCap size={28} />,
+              health: <HeartPulse size={28} />,
+              food: <UtensilsCrossed size={28} />
+            };
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                viewport={{ once: true }}
+                className="group bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-dfu-primary/30 dark:hover:border-blue-400/30 hover:shadow-xl dark:hover:shadow-blue-900/10 transition-all duration-300 cursor-pointer"
+              >
+                <div className="w-14 h-14 bg-gradient-to-br from-dfu-primary/10 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-dfu-primary dark:text-blue-400">
+                    {iconMap[item.icon]}
+                  </div>
+                </div>
+                <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-dfu-primary dark:group-hover:text-blue-400 transition-colors">
+                  {item.name}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                  {item.desc}
+                </p>
+              </motion.div>
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* Technologies Section */}
+      <Section className="bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div className="text-center mb-12">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="font-display text-3xl font-bold mb-4 text-dfu-dark dark:text-white"
+          >
+            {t.technologies.title}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            viewport={{ once: true }}
+            className="text-text-light dark:text-gray-400 max-w-2xl mx-auto"
+          >
+            {t.technologies.subtitle}
+          </motion.p>
+        </div>
+
+        {/* Tech Stack Grid */}
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-6">
+          {[
+            { name: 'React', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
+            { name: 'TypeScript', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg' },
+            { name: 'Node.js', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg' },
+            { name: 'Python', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg' },
+            { name: 'Flutter', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg' },
+            { name: 'Firebase', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg' },
+            { name: 'AWS', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg' },
+            { name: 'Google Cloud', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg' },
+            { name: 'Kubernetes', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg' },
+            { name: 'Docker', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg' },
+            { name: 'PostgreSQL', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg' },
+            { name: 'MongoDB', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg' },
+          ].map((tech, idx) => (
+            <motion.div
+              key={tech.name}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: idx * 0.05 }}
+              viewport={{ once: true }}
+              className="group flex flex-col items-center p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-dfu-primary/30 dark:hover:border-blue-400/30 hover:shadow-lg transition-all duration-300"
+            >
+              <div className="w-12 h-12 mb-3 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <img src={tech.icon} alt={tech.name} className="w-full h-full object-contain" />
+              </div>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">{tech.name}</span>
+            </motion.div>
+          ))}
+        </div>
+      </Section>
+
       {/* Product Showcase */}
       <Section id="product" className="bg-[#F9F9F9] dark:bg-gray-800/50 transition-colors duration-300">
          <div className="bg-gradient-to-r from-dfu-dark to-gray-800 dark:from-gray-900 dark:to-gray-800 rounded-3xl overflow-hidden shadow-2xl text-white">
@@ -707,32 +882,114 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
       </Section>
 
       {/* Process / How We Work */}
-      <Section className="bg-white dark:bg-gray-900 transition-colors duration-300">
+      <Section className="bg-white dark:bg-gray-900 transition-colors duration-300 overflow-hidden">
         <div className="text-center mb-16">
-          <h2 className="font-display text-3xl font-bold mb-4 text-dfu-dark dark:text-white">{t.process.title}</h2>
-          <p className="text-text-light dark:text-gray-400 max-w-2xl mx-auto">{t.process.subtitle}</p>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="font-display text-3xl font-bold mb-4 text-dfu-dark dark:text-white"
+          >
+            {t.process.title}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            viewport={{ once: true }}
+            className="text-text-light dark:text-gray-400 max-w-2xl mx-auto"
+          >
+            {t.process.subtitle}
+          </motion.p>
         </div>
-        <div className="grid md:grid-cols-4 gap-6">
-          {t.process.steps.map((step, idx) => (
-            <div key={idx} className="relative">
-              <div className="text-center p-6">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-dfu-primary/10 dark:bg-blue-900/30 flex items-center justify-center">
-                  {idx === 0 && <MessageCircle className="text-dfu-primary dark:text-blue-400" size={28} />}
-                  {idx === 1 && <Rocket className="text-dfu-primary dark:text-blue-400" size={28} />}
-                  {idx === 2 && <Code className="text-dfu-primary dark:text-blue-400" size={28} />}
-                  {idx === 3 && <CheckCircle className="text-dfu-primary dark:text-blue-400" size={28} />}
-                </div>
-                <div className="w-8 h-8 mx-auto -mt-2 mb-4 rounded-full bg-dfu-primary text-white flex items-center justify-center font-bold text-sm">
-                  {idx + 1}
-                </div>
-                <h3 className="font-display text-lg font-bold mb-2 text-gray-900 dark:text-white">{step.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">{step.desc}</p>
-              </div>
-              {idx < 3 && (
-                <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-dfu-primary/30 to-transparent"></div>
-              )}
-            </div>
-          ))}
+
+        {/* Desktop: Clean grid layout */}
+        <div className="hidden md:block">
+          <div className="grid grid-cols-4 gap-8">
+            {t.process.steps.map((step, idx) => {
+              const icons = [
+                <MessageCircle size={32} key="msg" />,
+                <Rocket size={32} key="rocket" />,
+                <Code size={32} key="code" />,
+                <CheckCircle size={32} key="check" />
+              ];
+              return (
+                <ProcessStepCard key={idx} step={step} index={idx} icon={icons[idx]} />
+              );
+            })}
+          </div>
+          {/* Connecting line underneath with step markers */}
+          <div className="relative mt-8 flex items-center">
+            {[0, 1, 2, 3].map((i) => (
+              <React.Fragment key={i}>
+                {/* Step marker */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  transition={{ duration: 0.4, delay: 0.2 + i * 0.15 }}
+                  viewport={{ once: true }}
+                  className="relative z-10 w-4 h-4 bg-dfu-primary rounded-full shadow-lg shadow-dfu-primary/30 flex-shrink-0"
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                    className="absolute inset-0 bg-dfu-primary rounded-full"
+                  />
+                </motion.div>
+                {/* Line segment */}
+                {i < 3 && (
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    transition={{ duration: 0.6, delay: 0.3 + i * 0.15 }}
+                    viewport={{ once: true }}
+                    className="flex-1 h-0.5 bg-gradient-to-r from-dfu-primary to-dfu-primary/50 origin-left"
+                  />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile: Vertical timeline layout */}
+        <div className="md:hidden relative">
+          {/* Vertical line */}
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-dfu-primary via-dfu-primary/50 to-transparent" />
+
+          <div className="space-y-8">
+            {t.process.steps.map((step, idx) => {
+              const icons = [
+                <MessageCircle size={24} key="msg" />,
+                <Rocket size={24} key="rocket" />,
+                <Code size={24} key="code" />,
+                <CheckCircle size={24} key="check" />
+              ];
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  viewport={{ once: true }}
+                  className="relative flex gap-6 items-start"
+                >
+                  {/* Timeline dot */}
+                  <div className="relative z-10 w-16 h-16 rounded-full bg-gradient-to-br from-dfu-primary to-blue-600 flex items-center justify-center text-white shadow-lg shrink-0">
+                    {icons[idx]}
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 bg-white dark:bg-gray-800 rounded-xl p-5 shadow-md border border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-bold text-dfu-primary bg-dfu-primary/10 px-2 py-1 rounded-full">Step {idx + 1}</span>
+                    </div>
+                    <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-1">{step.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">{step.desc}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </Section>
 
@@ -742,30 +999,69 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
             <h2 className="font-display text-3xl font-bold mb-4 text-dfu-dark dark:text-white">{t.team.title}</h2>
             <p className="text-text-light dark:text-gray-400">{t.team.subtitle}</p>
          </div>
-         <div className="flex flex-col md:flex-row justify-center gap-12">
-            {[
-              { name: "Lao Gia Du", role: "Co-Founder & Developer", desc: "Full-stack expert passionate about building sustainable systems.", avatar: `${import.meta.env.BASE_URL}laogiadu.jpg`, linkedin: "https://www.linkedin.com/in/lao-gia-du/" },
-              { name: "Huỳnh Thanh Phúc", role: "Co-Founder & Developer", desc: "Focused on user experience and integrating AI into products.", avatar: `${import.meta.env.BASE_URL}huynhthanhphuc.jpg`, linkedin: "https://www.linkedin.com/in/huynh-thanh-phuc-3921a7140/", website: "https://tphuc.existflow.site/" }
-            ].map((dev, idx) => (
-              <div key={idx} className="flex flex-col items-center text-center max-w-sm">
-                 <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full mb-6 overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg">
-                    <img src={dev.avatar} alt={dev.name} className="w-full h-full object-cover" />
-                 </div>
-                 <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white">{dev.name}</h3>
-                 <span className="text-dfu-primary dark:text-blue-400 font-medium text-sm mb-3 uppercase tracking-wide">{dev.role}</span>
-                 <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{dev.desc}</p>
-                 <div className="flex gap-4 mt-4">
-                    <a href={dev.linkedin} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
-                       <Linkedin size={20} />
-                    </a>
-                    {dev.website && (
-                       <a href={dev.website} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
-                          <Globe size={20} />
+
+         {/* Development Team */}
+         <div className="mb-16">
+            <h3 className="text-center text-lg font-semibold text-gray-500 dark:text-gray-400 mb-8 uppercase tracking-wider">Development Team</h3>
+            <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-8">
+              <a href="mailto:developer@dfulabs.com" className="hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">developer@dfulabs.com</a>
+            </p>
+            <div className="flex flex-col md:flex-row justify-center gap-12">
+               {[
+                 { name: "Lao Gia Du", role: "Co-Founder & Developer", desc: "Full-stack expert passionate about building sustainable systems.", avatar: `${import.meta.env.BASE_URL}laogiadu.jpg`, linkedin: "https://www.linkedin.com/in/lao-gia-du/", phone: "0925 976 679" },
+                 { name: "Huỳnh Thanh Phúc", role: "Co-Founder & Developer", desc: "Focused on user experience and integrating AI into products.", avatar: `${import.meta.env.BASE_URL}huynhthanhphuc.jpg`, linkedin: "https://www.linkedin.com/in/huynh-thanh-phuc-3921a7140/", website: "https://tphuc.existflow.site/", phone: "0347 766 101", email: "phuc@dfulabs.com" }
+               ].map((dev, idx) => (
+                 <div key={idx} className="flex flex-col items-center text-center max-w-sm">
+                    <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full mb-6 overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg">
+                       <img src={dev.avatar} alt={dev.name} className="w-full h-full object-cover" />
+                    </div>
+                    <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white">{dev.name}</h3>
+                    <span className="text-dfu-primary dark:text-blue-400 font-medium text-sm mb-2 uppercase tracking-wide">{dev.role}</span>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-2">{dev.desc}</p>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1 mb-3">
+                       {dev.phone && (
+                         <a href={`tel:${dev.phone.replace(/\s/g, '')}`} className="flex items-center justify-center gap-1 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
+                           <Phone size={12} /> {dev.phone}
+                         </a>
+                       )}
+                       {dev.email && (
+                         <a href={`mailto:${dev.email}`} className="flex items-center justify-center gap-1 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
+                           <Mail size={12} /> {dev.email}
+                         </a>
+                       )}
+                    </div>
+                    <div className="flex gap-4">
+                       <a href={dev.linkedin} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
+                          <Linkedin size={20} />
                        </a>
-                    )}
+                       {dev.website && (
+                          <a href={dev.website} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
+                             <Globe size={20} />
+                          </a>
+                       )}
+                    </div>
                  </div>
-              </div>
-            ))}
+               ))}
+            </div>
+         </div>
+
+         {/* Sales Team */}
+         <div>
+            <h3 className="text-center text-lg font-semibold text-gray-500 dark:text-gray-400 mb-8 uppercase tracking-wider">Sales Team</h3>
+            <div className="flex flex-col md:flex-row justify-center gap-12">
+               {[
+                 { name: "Joel Billy", role: "Sales Representative", desc: "Connecting clients with the right solutions for their business needs.", avatar: null }
+               ].map((member, idx) => (
+                 <div key={idx} className="flex flex-col items-center text-center max-w-sm">
+                    <div className="w-32 h-32 bg-gradient-to-br from-dfu-primary to-blue-600 rounded-full mb-6 flex items-center justify-center border-4 border-white dark:border-gray-800 shadow-lg">
+                       <span className="text-white text-4xl font-bold">{member.name.split(' ').map(n => n[0]).join('')}</span>
+                    </div>
+                    <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white">{member.name}</h3>
+                    <span className="text-dfu-primary dark:text-blue-400 font-medium text-sm mb-3 uppercase tracking-wide">{member.role}</span>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{member.desc}</p>
+                 </div>
+               ))}
+            </div>
          </div>
       </Section>
 
@@ -795,16 +1091,29 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
             <p className="text-text-light dark:text-gray-400 mb-6">{t.contact.subtitle}</p>
             <div className="space-y-4 text-gray-600 dark:text-gray-400">
               <div className="flex items-center gap-3">
-                <Mail className="text-dfu-primary" size={20} />
+                <Mail className="text-dfu-primary flex-shrink-0" size={20} />
                 <span>contact@dfulabs.com</span>
               </div>
               <div className="flex items-center gap-3">
-                <Phone className="text-dfu-primary" size={20} />
+                <Phone className="text-dfu-primary flex-shrink-0" size={20} />
                 <span>+84 123 456 789</span>
               </div>
               <div className="flex items-center gap-3">
-                <Clock className="text-dfu-primary" size={20} />
+                <Clock className="text-dfu-primary flex-shrink-0" size={20} />
                 <span>Mon - Fri: 9:00 - 18:00</span>
+              </div>
+              <div className="flex items-start gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <MapPin className="text-dfu-primary flex-shrink-0 mt-0.5" size={20} />
+                <div className="space-y-2">
+                  <div>
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">Vietnam</span>
+                    <p className="text-sm">Ho Chi Minh City, Vietnam</p>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">United States</span>
+                    <p className="text-sm">San Francisco, CA, USA</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -885,7 +1194,7 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
       </footer>
 
       {/* Floating Contact Button */}
-      <FloatingContactButton />
+      <ChatBotWidget />
     </div>
   );
 };
