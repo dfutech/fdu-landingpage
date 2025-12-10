@@ -744,8 +744,8 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
          </div>
          <div className="flex flex-col md:flex-row justify-center gap-12">
             {[
-              { name: "Lao Gia Du", role: "Co-Founder & Developer", desc: "Full-stack expert passionate about building sustainable systems.", avatar: "/assets/laogiadu.jpg", linkedin: "https://www.linkedin.com/in/lao-gia-du/" },
-              { name: "Huỳnh Thanh Phúc", role: "Co-Founder & Developer", desc: "Focused on user experience and integrating AI into products.", avatar: "/assets/huynhthanhphuc.jpg", linkedin: "https://www.linkedin.com/in/huynh-thanh-phuc-3921a7140/", website: "https://tphuc.existflow.site/" }
+              { name: "Lao Gia Du", role: "Co-Founder & Developer", desc: "Full-stack expert passionate about building sustainable systems.", avatar: `${import.meta.env.BASE_URL}laogiadu.jpg`, linkedin: "https://www.linkedin.com/in/lao-gia-du/" },
+              { name: "Huỳnh Thanh Phúc", role: "Co-Founder & Developer", desc: "Focused on user experience and integrating AI into products.", avatar: `${import.meta.env.BASE_URL}huynhthanhphuc.jpg`, linkedin: "https://www.linkedin.com/in/huynh-thanh-phuc-3921a7140/", website: "https://tphuc.existflow.site/" }
             ].map((dev, idx) => (
               <div key={idx} className="flex flex-col items-center text-center max-w-sm">
                  <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full mb-6 overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg">
