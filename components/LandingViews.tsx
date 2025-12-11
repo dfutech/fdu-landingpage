@@ -1050,15 +1050,20 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
             <h3 className="text-center text-lg font-semibold text-gray-500 dark:text-gray-400 mb-8 uppercase tracking-wider">Sales Team</h3>
             <div className="flex flex-col md:flex-row justify-center gap-12">
                {[
-                 { name: "Joel Billy", role: "Sales Representative", desc: "Connecting clients with the right solutions for their business needs.", avatar: null }
+                 { name: "Joel Billy", role: "Sales Representative", desc: "Connecting clients with the right solutions for their business needs.", avatar: `${import.meta.env.BASE_URL}joelbilly.jpeg`, phone: "480 853 2618" }
                ].map((member, idx) => (
                  <div key={idx} className="flex flex-col items-center text-center max-w-sm">
-                    <div className="w-32 h-32 bg-gradient-to-br from-dfu-primary to-blue-600 rounded-full mb-6 flex items-center justify-center border-4 border-white dark:border-gray-800 shadow-lg">
-                       <span className="text-white text-4xl font-bold">{member.name.split(' ').map(n => n[0]).join('')}</span>
+                    <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full mb-6 overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg">
+                       <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
                     </div>
                     <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white">{member.name}</h3>
-                    <span className="text-dfu-primary dark:text-blue-400 font-medium text-sm mb-3 uppercase tracking-wide">{member.role}</span>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{member.desc}</p>
+                    <span className="text-dfu-primary dark:text-blue-400 font-medium text-sm mb-2 uppercase tracking-wide">{member.role}</span>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-2">{member.desc}</p>
+                    {member.phone && (
+                      <a href={`tel:${member.phone.replace(/\s/g, '')}`} className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
+                        <Phone size={12} /> {member.phone}
+                      </a>
+                    )}
                  </div>
                ))}
             </div>
