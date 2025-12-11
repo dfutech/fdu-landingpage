@@ -1097,7 +1097,7 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="text-dfu-primary flex-shrink-0" size={20} />
-                <span>+84 123 456 789</span>
+                <a href="tel:+14808532618" className="hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">+1 480 853 2618</a>
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="text-dfu-primary flex-shrink-0" size={20} />
@@ -1112,7 +1112,7 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
                   </div>
                   <div>
                     <span className="font-semibold text-gray-800 dark:text-gray-200">United States</span>
-                    <p className="text-sm">San Francisco, CA, USA</p>
+                    <p className="text-sm">Gilbert, AZ, USA</p>
                   </div>
                 </div>
               </div>
