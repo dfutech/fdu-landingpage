@@ -1008,8 +1008,8 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
             </p>
             <div className="flex flex-col md:flex-row justify-center gap-12">
                {[
-                 { name: "Lao Gia Du", role: "Co-Founder & Developer", desc: "Full-stack expert passionate about building sustainable systems.", avatar: `${import.meta.env.BASE_URL}laogiadu.jpg`, linkedin: "https://www.linkedin.com/in/lao-gia-du/", phone: "0925 976 679" },
-                 { name: "Huỳnh Thanh Phúc", role: "Co-Founder & Developer", desc: "Focused on user experience and integrating AI into products.", avatar: `${import.meta.env.BASE_URL}huynhthanhphuc.jpg`, linkedin: "https://www.linkedin.com/in/huynh-thanh-phuc-3921a7140/", website: "https://tphuc.existflow.site/", phone: "0347 766 101", email: "phuc@dfulabs.com" }
+                 { name: "Lao Gia Du", role: "Co-Founder & Developer", desc: "Full-stack expert passionate about building sustainable systems.", avatar: `${import.meta.env.BASE_URL}laogiadu.jpg`, linkedin: "https://www.linkedin.com/in/lao-gia-du/" },
+                 { name: "Huỳnh Thanh Phúc", role: "Co-Founder & Developer", desc: "Focused on user experience and integrating AI into products.", avatar: `${import.meta.env.BASE_URL}huynhthanhphuc.jpg`, linkedin: "https://www.linkedin.com/in/huynh-thanh-phuc-3921a7140/", website: "https://tphuc.existflow.site/", email: "phuc@dfulabs.com" }
                ].map((dev, idx) => (
                  <div key={idx} className="flex flex-col items-center text-center max-w-sm">
                     <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full mb-6 overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg">
@@ -1018,18 +1018,11 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
                     <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white">{dev.name}</h3>
                     <span className="text-dfu-primary dark:text-blue-400 font-medium text-sm mb-2 uppercase tracking-wide">{dev.role}</span>
                     <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-2">{dev.desc}</p>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1 mb-3">
-                       {dev.phone && (
-                         <a href={`tel:${dev.phone.replace(/\s/g, '')}`} className="flex items-center justify-center gap-1 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
-                           <Phone size={12} /> {dev.phone}
-                         </a>
-                       )}
-                       {dev.email && (
-                         <a href={`mailto:${dev.email}`} className="flex items-center justify-center gap-1 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
-                           <Mail size={12} /> {dev.email}
-                         </a>
-                       )}
-                    </div>
+                    {dev.email && (
+                      <a href={`mailto:${dev.email}`} className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1 mb-3 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
+                        <Mail size={12} /> {dev.email}
+                      </a>
+                    )}
                     <div className="flex gap-4">
                        <a href={dev.linkedin} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
                           <Linkedin size={20} />
@@ -1048,22 +1041,25 @@ export const DFULabsPage: React.FC<PageProps> = ({ onNavigate, language, setLang
          {/* Sales Team */}
          <div>
             <h3 className="text-center text-lg font-semibold text-gray-500 dark:text-gray-400 mb-8 uppercase tracking-wider">Sales Team</h3>
+            <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-8">
+              <a href="tel:+14808532618" className="hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">+1 480 853 2618</a>
+            </p>
             <div className="flex flex-col md:flex-row justify-center gap-12">
                {[
-                 { name: "Joel Billy", role: "Sales Representative", desc: "Connecting clients with the right solutions for their business needs.", avatar: `${import.meta.env.BASE_URL}joelbilly.jpeg`, phone: "480 853 2618" }
+                 { name: "Joel Billy", role: "Sales Representative", location: "Gilbert, AZ, USA", desc: "Connecting clients with the right solutions for their business needs.", avatar: `${import.meta.env.BASE_URL}joelbilly.jpeg` }
                ].map((member, idx) => (
                  <div key={idx} className="flex flex-col items-center text-center max-w-sm">
                     <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full mb-6 overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg">
                        <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
                     </div>
                     <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white">{member.name}</h3>
-                    <span className="text-dfu-primary dark:text-blue-400 font-medium text-sm mb-2 uppercase tracking-wide">{member.role}</span>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-2">{member.desc}</p>
-                    {member.phone && (
-                      <a href={`tel:${member.phone.replace(/\s/g, '')}`} className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1 hover:text-dfu-primary dark:hover:text-blue-400 transition-colors">
-                        <Phone size={12} /> {member.phone}
-                      </a>
+                    <span className="text-dfu-primary dark:text-blue-400 font-medium text-sm mb-1 uppercase tracking-wide">{member.role}</span>
+                    {member.location && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1 mb-2">
+                        <MapPin size={12} /> {member.location}
+                      </span>
                     )}
+                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{member.desc}</p>
                  </div>
                ))}
             </div>
